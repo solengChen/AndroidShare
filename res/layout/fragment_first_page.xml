@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <com.scau.keshe.sharespace.firstpage.SearchEditText
+        android:id="@+id/page_searchView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:cursorVisible="false"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/search_bar_edit_selector"
+        android:drawableLeft="@drawable/search_bar_icon_normal"
+        android:hint="在这里输入" >
+    </com.scau.keshe.sharespace.firstpage.SearchEditText>
+
+    <LinearLayout
+        android:id="@+id/fpage_pop_order"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:baselineAligned="false"
+        android:orientation="horizontal" >
+
+        <LinearLayout
+            android:id="@+id/fpage_popitem_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="4dp" >
+
+            <TextView
+                android:id="@+id/fpage_popitem_week"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal"
+                android:text="@string/firstpage_popitem_week"
+                android:background="@drawable/pop_tab_linebg"
+                />
+
+            <TextView
+                android:id="@+id/fpage_popitem_month"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:gravity="center_horizontal"
+                android:text="@string/firstpage_popitem_month"
+                android:background="@drawable/pop_tab_linebg" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/fpage_popitem_other"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="4dp" >
+
+            <TextView
+                android:id="@+id/fpage_popitem_star"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal"
+                android:text="@string/firstpage_popitem_star"
+                android:background="@drawable/pop_tab_linebg" />
+
+            <TextView
+                android:id="@+id/fpage_popitem_comment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:gravity="center_horizontal"
+                android:text="@string/firstpage_popitem_comment"
+                android:background="@drawable/pop_tab_linebg" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <com.scau.keshe.sharespace.firstpage.view.FPlistView
+        android:id="@+id/fpage_share_contents"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" 
+        android:descendantFocusability="afterDescendants">
+    </com.scau.keshe.sharespace.firstpage.view.FPlistView>
+
+</LinearLayout>

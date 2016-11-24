@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.scau.keshe.sharespace"
+    android:installLocation="preferExternal"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="14"
+        android:targetSdkVersion="18" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/portrat"
+        android:label="@string/app_name"
+        android:logo="@drawable/portrat"
+        android:permission="android.permission.ACCESS_FINE_LOCATION"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="com.scau.keshe.sharespace.welcome.WelcomeActivity"
+            android:label="@string/title_activity_welcome"
+            android:theme="@android:style/Theme.Black.NoTitleBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.scau.keshe.sharespace.chat.view.ChatActivity"
+            android:label="@string/title_activity_chat"
+            android:parentActivityName="com.scau.keshe.sharespace.welcome.MainActivity" >
+        </activity>
+        <activity
+            android:name="com.scau.keshe.sharespace.welcome.MainActivity"
+            android:label="@string/app_name"
+            android:windowSoftInputMode="stateHidden|adjustPan" >
+        </activity>
+        <activity
+            android:name="com.scau.keshe.sharespace.talking.TalkingFragment"
+            android:label="@string/title_activity_talking" >
+        </activity>
+        <activity
+            android:name="com.scau.keshe.sharespace.myself.PersonalInfoActivity"
+            android:label="@string/title_activity_personal_info" >
+        </activity>
+        <activity
+            android:name="com.scau.keshe.sharespace.myself.PersonalCollectionActivity"
+            android:label="@string/title_activity_personal_collection" >
+        </activity>
+        <activity
+            android:name="com.scau.keshe.sharespace.myself.PersonalShareActivity"
+            android:label="@string/title_activity_personal_share" >
+        </activity>
+        <activity
+            android:name="com.scau.keshe.sharespace.myself.PersonalSettingActivity"
+            android:label="@string/title_activity_personal_setting" >
+        </activity>
+        <activity
+            android:name="com.scau.keshe.sharespace.dealImage.ImageShowActivity"
+            android:label="@string/title_activity_image_show" >
+        </activity>
+        <activity
+            android:name="com.scau.keshe.sharespace.welcome.view.LoginActivity"
+            android:label="@string/title_activity_login" >
+        </activity>
+        <activity
+            android:name="com.scau.keshe.sharespace.welcome.view.SignUpActivity"
+            android:label="@string/title_activity_sign_up" >
+        </activity>
+        <activity
+            android:name="com.scau.keshe.sharespace.myself.IwouldShareActivity"
+            android:label="@string/title_activity_iwould_share" >
+        </activity>
+    </application>
+
+</manifest>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp" >
+
+    <TextView
+        android:id="@+id/talking_date"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/talking_date_background"
+        android:gravity="center_horizontal"
+        android:text="2016-09-09" />
+
+    <LinearLayout
+        android:id="@+id/talking_content_ly"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/talking_date"
+        android:gravity="left"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/user_image"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="10dp" />
+
+        <TextView
+            android:id="@+id/content_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:background="#33ffdd"
+            android:maxWidth="150dp"
+            android:padding="10dp"
+            android:layout_marginTop="10dp" />
+    </LinearLayout>
+
+</RelativeLayout>

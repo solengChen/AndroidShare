@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:padding="10dp" >
+
+    <ImageView
+        android:id="@+id/share_image_portrait"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/portrat" />
+
+    <LinearLayout
+        android:id="@+id/share_content_linear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxHeight="80dp"
+        android:orientation="vertical"
+        android:padding="10dp"
+         >
+
+        <TextView
+            android:id="@+id/share_content_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="zhangsan"
+            android:textColor="#000faa" />
+
+        <TextView
+            android:id="@+id/share_content_myworld"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:adjustViewBounds="true"
+            android:maxHeight="35dp"
+            android:text="hahahahahahkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk" />
+
+        <ImageView
+            android:id="@+id/share_content_picture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:adjustViewBounds="true"
+            android:maxHeight="100dp"
+            android:maxWidth="100dp"
+            android:src="@drawable/pic" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp" >
+
+            <TextView
+                android:id="@+id/share_content_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:paddingTop="5dp"
+                android:hint="6 days ago" />
+
+            <ImageView
+                android:id="@+id/share_content_comment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:src="@android:drawable/star_big_on" />
+        </RelativeLayout>
+        
+        <TextView 
+            android:id="@+id/share_content_thumpup"
+            android:layout_width="match_parent"
+            android:layout_height="15dp"
+            android:layout_marginTop="10dp"
+            android:text="sanare, youli"
+            android:background="@drawable/dialogbg"
+            />
+        
+        <TextView 
+            android:id="@+id/share_content_dialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="sanare : good!"
+            android:background="#c0c0c0"
+            />
+    </LinearLayout>
+
+</LinearLayout>

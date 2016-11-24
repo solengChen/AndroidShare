@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#c0c0c0"
+    android:orientation="vertical" >
+    
+    <LinearLayout 
+        android:id="@+id/personal_portrat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:padding="5dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/pressdown"
+        >
+        <TextView
+            android:id="@+id/personal_tab1" 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:textSize="@dimen/personal_textsize"
+            android:layout_weight="1"
+            android:text="@string/personal_info_portrat"
+            />
+        
+        <ImageView 
+            android:id="@+id/personal_portratimg"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/portrat"
+            />
+    </LinearLayout>
+    
+    <LinearLayout 
+        android:id="@+id/personal_nickname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:padding="5dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/pressdown"
+        >
+        <TextView
+            android:id="@+id/personal_tab2" 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:textSize="@dimen/personal_textsize"
+            android:layout_weight="1"
+            android:text="@string/personal_info_nickname"
+            />
+        
+        <TextView 
+            android:id="@+id/personal_nickname_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#909090"
+            android:text="水货"   
+            />
+    </LinearLayout>
+    
+    <LinearLayout 
+        android:id="@+id/personal_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:padding="5dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/pressdown"
+        >
+        <TextView
+            android:id="@+id/personal_tab3" 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:textSize="@dimen/personal_textsize"
+            android:layout_weight="1"
+            android:text="@string/personal_info_username"
+            />
+        
+        <TextView 
+            android:id="@+id/personal_username_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#909090"
+            android:text="what"   
+            />
+    </LinearLayout>
+    
+    
+    
+    <LinearLayout 
+        android:id="@+id/personal_sex"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:padding="5dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/pressdown"
+        >
+        <TextView
+            android:id="@+id/personal_tab4" 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:textSize="@dimen/personal_textsize"
+            android:layout_weight="1"
+            android:text="@string/personal_info_sex"
+            />
+        
+        <TextView 
+            android:id="@+id/personal_sex_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#909090"
+            android:text="男"   
+            />
+    </LinearLayout>
+
+
+    <LinearLayout 
+        android:id="@+id/personal_specialsign"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:padding="5dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/pressdown"
+        >
+        <TextView
+            android:id="@+id/personal_tab5" 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:textSize="@dimen/personal_textsize"
+            android:layout_weight="1"
+            android:text="@string/personal_info_specialsign"
+            />
+        
+        <TextView 
+            android:id="@+id/personal_specialsign_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#909090"
+            android:text="土司蛋糕"   
+            />
+    </LinearLayout>
+</LinearLayout>

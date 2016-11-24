@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ShareSpace</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_chat">ChatActivity</string>
+    <string name="title_activity_welcome">WelcomeActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_talking">TalkingActivity</string>
+    <string name="action_addfriend">添加好友</string>
+    <string name="action_helpinfo">帮助和反馈</string>
+    <string name="firstpage_fragment_juxin">巨信</string>
+    <string name="firstpage_fragment_fp">首页</string>
+    <string name="firstpage_fragment_con">通讯录</string>
+    <string name="firstpage_fragment_mine">我的</string>
+    <string name="myself_fragment_collect">收藏</string>
+    <string name="myself_fragment_setting">设置</string>
+    <string name="myself_fragment_share">我的分享</string>
+    <string name="talking_fragment_warm">请检查网络连接！</string>
+    <string name="personal_info_portrat">头像</string>
+    <string name="personal_info_nickname">昵称</string>
+    <string name="personal_info_username">巨信号</string>
+    <string name="personal_info_sex">性别</string>
+    <string name="personal_info_specialsign">个性签名</string>
+    <string name="title_activity_personal_info">PersonalInfoActivity</string>
+    <string name="title_activity_personal_collection">PersonalCollectionActivity</string>
+    <string name="title_activity_personal_share">PersonalShareActivity</string>
+    <string name="title_activity_personal_setting">PersonalSettingActivity</string>
+    <string name="firstpage_popitem_week">这一周</string>
+    <string name="firstpage_popitem_month">这个月</string>
+    <string name="firstpage_popitem_star">点赞量</string>
+    <string name="firstpage_popitem_comment">评论数</string>
+    <string name="app_title">图片浏览</string>
+    <string name="all_picture">所有图片</string>
+    <string name="num_picture">0张</string>
+    <string name="title_activity_image_show">ImageShowActivity</string>
+    <string name="action_confirm">完成</string>
+    <string name="action_showImage">我要分享</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="content_login_confirm">登录</string>
+    <string name="content_login_clear">清空</string>
+    <string name="content_login_name">账号</string>
+    <string name="content_login_password">密码</string>
+    <string name="content_signup_password_conf">确认密码</string>
+    <string name="content_signup_name">注册账号</string>
+    <string name="content_signup_password">注册密码</string>
+    <string name="content_signup_jump">注册</string>
+    <string name="title_activity_sign_up">SignUpActivity</string>
+    <string name="title_activity_iwould_share">IwouldShareActivity</string>
+	
+    <string name="button_confirm">确定</string>
+    <string name="button_cancel">取消</string>
+    <string name="button_clear">清空</string>
+</resources>

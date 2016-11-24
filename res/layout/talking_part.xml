@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:padding="10dp" >
+
+    <RelativeLayout
+        android:id="@+id/talking_part_picture" 
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        
+        >
+        <ImageView 
+        android:id="@+id/talking_part_portrat"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/portrat"
+        />
+        
+        <ImageView 
+            android:id="@+id/talking_part_redport"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_alignParentRight="true"
+            android:visibility="visible"
+            android:background="#ff0000"
+            />
+        
+        <TextView 
+            android:id="@+id/talking_part_infonum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="3dp"
+            android:layout_alignParentRight="true"
+            android:visibility="visible"
+            android:textColor="#ffffff"
+            android:text="2"
+            />
+        
+    </RelativeLayout>
+    
+
+    <LinearLayout
+        android:id="@+id/talking_part_friend_textinfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_weight="1"
+        android:layout_marginLeft="10dp"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/talking_part_friend_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chen"
+            android:textColor="#000000"
+            android:textSize="15sp" />
+
+        <TextView
+            android:layout_marginTop="10dp"
+            android:id="@+id/talking_part_prefixinfo"
+            android:layout_width="wrap_content"
+            android:layout_height="14dp"
+            android:text="haha,nice day"
+            android:textSize="12sp" />
+    </LinearLayout>
+	<TextView 
+	    android:id="@+id/talking_part_datetxt"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_marginTop="5dp"
+	    android:text="1月16日"
+	    />
+</LinearLayout>

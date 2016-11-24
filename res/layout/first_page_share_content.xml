@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+    <ImageView
+            android:id="@+id/first_page_sharelist_portrait"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/portrat" />
+
+        <LinearLayout
+            android:id="@+id/first_page_sharelist_firstline"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/first_page_sharelist_username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:text="soleng"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/first_page_sharelist_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="5dp"
+                android:text="@string/hello_world"
+                android:maxHeight="50dp" />
+
+           <com.scau.keshe.sharespace.firstpage.view.ImageGridView
+                android:id="@+id/first_page_sharelist_image_gridview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:verticalSpacing="5dp"
+                android:horizontalSpacing="5dp"
+                />
+
+            <RelativeLayout
+                android:id="@+id/first_page_sharelist_thirdline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp" >
+
+                <LinearLayout
+                    android:id="@+id/first_page_sharelist_praise_line"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="5dp"
+                    android:orientation="vertical" >
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@android:drawable/ic_menu_camera" />
+
+                    <TextView
+                        android:id="@+id/first_page_sharelist_text_praise"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="20赞"
+                        android:textColor="#a0a0a0" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/first_page_sharelist_comment_line"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_toRightOf="@+id/first_page_sharelist_praise_line"
+                    android:orientation="vertical" >
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@android:drawable/ic_menu_compass" />
+
+                    <TextView
+                        android:id="@+id/first_page_sharelist_text_comments"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="20评论"
+                        android:textColor="#a0a0a0" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/first_page_sharelist_text_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/first_page_sharelist_praise_line"
+                    android:layout_alignParentRight="true"
+                    android:text="2016-11-31" />
+            </RelativeLayout>
+        </LinearLayout>
+
+</LinearLayout>

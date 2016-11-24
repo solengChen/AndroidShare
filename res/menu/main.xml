@@ -1,0 +1,18 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+	
+    <item
+        android:id="@+id/action_addfriends"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:icon="@drawable/ic_launcher"
+        android:title="@string/action_addfriend"/>
+    
+    <item 
+        android:id="@+id/action_iwould_share"
+        android:orderInCategory="100"
+        android:icon="@drawable/diretory"
+        android:showAsAction="never"
+        android:title="@string/action_showImage"
+        />
+
+</menu>
