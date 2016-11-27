@@ -14,6 +14,7 @@ import com.scau.keshe.sharespace.R;
 import com.scau.keshe.sharespace.R.layout;
 import com.scau.keshe.sharespace.R.menu;
 import com.scau.keshe.sharespace.dealImage.ImageAdapter;
+import com.scau.keshe.sharespace.dealImage.ImageLoader;
 import com.scau.keshe.sharespace.dealImage.ImageShowActivity;
 import com.scau.keshe.sharespace.myself.IshareImageAdapter.openImageShowListener;
 import com.scau.keshe.sharespace.requestnet.ClientBehavior;
@@ -21,6 +22,8 @@ import com.scau.keshe.sharespace.util.ErrorMessage;
 import com.scau.keshe.sharespace.welcome.MainActivity;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -53,6 +56,8 @@ public class IwouldShareActivity extends Activity implements
 
 	private ProgressDialog dialog;
 
+	private Handler UIHandler;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -64,7 +69,7 @@ public class IwouldShareActivity extends Activity implements
 
 	private void initView() {
 		this.setTitle("发布分享");
-
+		
 		intent = new Intent();
 		intent.setClass(IwouldShareActivity.this, ImageShowActivity.class);
 		nullImages = new ArrayList<String>();
@@ -73,6 +78,23 @@ public class IwouldShareActivity extends Activity implements
 		clear = (Button) findViewById(R.id.iwould_share_clear);
 		confirm = (Button) findViewById(R.id.iwould_share_confirm);
 		gridView = (GridView) findViewById(R.id.iwould_share_images);
+
+		if (UIHandler == null) {
+			UIHandler = new Handler() {
+				public void handleMessage(android.os.Message msg) {
+					switch (msg.what) {
+					case 0x002:
+						ImageAdapter.getSelectedImg().clear();
+						break;
+					case 0x001:
+						String error = msg.getData().getString("error");
+						Toast.makeText(IwouldShareActivity.this,
+								"图片上传失败：" + error, Toast.LENGTH_SHORT).show();
+						break;
+					}
+				};
+			};
+		}
 
 	}
 
@@ -107,8 +129,13 @@ public class IwouldShareActivity extends Activity implements
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == IMAGESHOW && resultCode == UPLAODCALL) {
-			uploadImages = ImageAdapter.getSelectedImg();
-			adapter.setData(uploadImages);
+			if (ImageAdapter.getSelectedImg().size() > 0) {
+				uploadImages = ImageAdapter.getSelectedImg();
+				adapter.setData(uploadImages);
+			} else {
+				uploadImages = null;
+				adapter.setData(nullImages);
+			}
 			adapter.notifyDataSetChanged();
 		}
 		super.onActivityResult(requestCode, resultCode, data);
@@ -138,7 +165,7 @@ public class IwouldShareActivity extends Activity implements
 					public void run() {
 						parseImage();
 						dialog.dismiss();
-						finish();
+						IwouldShareActivity.this.finish();
 					}
 				});
 				break;
@@ -170,7 +197,8 @@ public class IwouldShareActivity extends Activity implements
 				FileInputStream ipsm;
 				try {
 					String path = uploadImages.get(i);
-//					String stuffix = path.substring(path.lastIndexOf(".") + 1);
+					// String stuffix = path.substring(path.lastIndexOf(".") +
+					// 1);
 					String stuffix = path.substring(path.lastIndexOf("."));
 					Log.i("IwouldShareAct------>174", path + " " + stuffix);
 					ipsm = new FileInputStream(new File(path));
@@ -184,13 +212,18 @@ public class IwouldShareActivity extends Activity implements
 						bytestream.write(mybyte, 0, n);
 					}
 					byte[] textdata = bytestream.toByteArray();
-					Log.i("uploadimage==================", "" + textdata.length);
+					Log.i("上传图片解析后图片数组长度", "" + textdata.length);
 					imagesId[i] = publishShare.uploadPicture(stuffix, textdata);
 					// 图片上传失败，打印错误信息日志
 					if (imagesId[i] == -1) {
 						String error = ErrorMessage.Handler(publishShare
 								.getErrorCode());
-						Log.i("IwouldShareActivity-------------->193", error);
+						Message msg = Message.obtain();
+						msg.what = 0x001;
+						Bundle bundle = new Bundle();
+						bundle.putString("error", error);
+						msg.setData(bundle);
+						Log.i("IwouldShareActivity-------------->215", error);
 					}
 					ipsm.close();
 					bf.close();
@@ -221,5 +254,6 @@ public class IwouldShareActivity extends Activity implements
 			setResult(MainActivity.IWOULDSHARE_SUCCESS);
 		}
 
+		UIHandler.sendEmptyMessage(0x002);
 	}
 }

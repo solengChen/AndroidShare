@@ -5,6 +5,7 @@ import java.util.Date;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,7 +15,6 @@ import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -29,11 +29,12 @@ public class FPlistView extends ListView implements OnScrollListener {
 
 	private boolean isFrashable; // 在界面顶端下拉标记
 	private int primaryY; // 下拉距离的起点Y
-	private int scrollState; // 当前滚动状态
+	private volatile int scrollState; // 当前滚动状态
 
 	private TextView tip;
 	private ImageView arrow;
 	private ProgressBar progress;
+
 	/**
 	 * 状态提示，pull时提示下拉可刷新 release时提示松开可刷新 refrushing时提示正在刷新
 	 * 
@@ -71,14 +72,12 @@ public class FPlistView extends ListView implements OnScrollListener {
 		topPadding(-headerHeight);
 
 		this.addHeaderView(header);
-//		this.setOnItemClickListener(itemclick);
+		// this.setOnItemClickListener(itemclick);
 		this.setOnScrollListener(this);
 
-		tip = (TextView) header
-				.findViewById(R.id.fragment_header_text);
+		tip = (TextView) header.findViewById(R.id.fragment_header_text);
 
-		arrow = (ImageView) header
-				.findViewById(R.id.fragment_header_arrow);
+		arrow = (ImageView) header.findViewById(R.id.fragment_header_arrow);
 		progress = (ProgressBar) header
 				.findViewById(R.id.fragment_header_progress);
 	}
@@ -122,6 +121,9 @@ public class FPlistView extends ListView implements OnScrollListener {
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
 		this.scrollState = scrollState;
+		if(listener != null) {
+			listener.listScrollStatus(scrollState);
+		}
 	}
 
 	@Override
@@ -129,6 +131,11 @@ public class FPlistView extends ListView implements OnScrollListener {
 			int visibleItemCount, int totalItemCount) {
 		// 如果firstVisibleItem = 0，判断在最顶端
 		this.firstVisibleItem = firstVisibleItem;
+		int lastVisibleItem = firstVisibleItem + visibleItemCount - 1;
+		
+		if(listener != null) {
+			listener.listScrollPosition(firstVisibleItem, visibleItemCount);
+		}
 	}
 
 	/**
@@ -138,13 +145,14 @@ public class FPlistView extends ListView implements OnScrollListener {
 	public boolean onTouchEvent(MotionEvent ev) {
 
 		reflashlistener.popTabDismiss();
+		if (firstVisibleItem != 0) {
+			return super.onTouchEvent(ev);
+		}
 		switch (ev.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 
-			if (firstVisibleItem == 0) {
-				isFrashable = true;
-				primaryY = (int) ev.getY();
-			}
+			isFrashable = true;
+			primaryY = (int) ev.getY();
 
 			break;
 
@@ -198,8 +206,6 @@ public class FPlistView extends ListView implements OnScrollListener {
 		}
 		int currentY = (int) ev.getY();
 		int distance = currentY - primaryY;
-
-		// 由于下拉刷新框的是动态的，所以在移动时要不断刷新topPadding的值
 		int topPadding = distance - headerHeight;
 
 		switch (status) {
@@ -213,7 +219,7 @@ public class FPlistView extends ListView implements OnScrollListener {
 		case PULL:
 			topPadding(topPadding);
 			if (distance > (headerHeight + 30)
-					&& scrollState == SCROLL_STATE_TOUCH_SCROLL) {
+					&& this.scrollState == SCROLL_STATE_TOUCH_SCROLL) {
 				status = Status.RELEASE;
 				refreshViewByState();
 			}
@@ -232,7 +238,7 @@ public class FPlistView extends ListView implements OnScrollListener {
 			break;
 
 		case REFLASHING:
-			//什么都不做
+			// 什么都不做
 			break;
 		}
 	}
@@ -266,6 +272,7 @@ public class FPlistView extends ListView implements OnScrollListener {
 			tip.setText("下拉可以刷新!");
 			break;
 		case RELEASE:
+			Log.i("松开可以刷新", "");
 			arrow.setVisibility(View.VISIBLE);
 			progress.setVisibility(View.GONE);
 			arrow.clearAnimation();
@@ -300,6 +307,7 @@ public class FPlistView extends ListView implements OnScrollListener {
 	 */
 	public interface ReflashListener {
 		void onReflash();
+
 		void popTabDismiss();
 	}
 
@@ -307,5 +315,20 @@ public class FPlistView extends ListView implements OnScrollListener {
 
 	public void setReflashListener(ReflashListener reflashlistener) {
 		this.reflashlistener = reflashlistener;
+	}
+
+	
+	/**
+	 * 回调接口类，用于adapter更新数据
+	 */
+	private ListScrollStatusListener listener;
+
+	public void setListScrollStatusListener(ListScrollStatusListener listener) {
+		this.listener = listener;
+	}
+
+	public interface ListScrollStatusListener {
+		void listScrollPosition(int start, int end);
+		void listScrollStatus(int status);
 	}
 }

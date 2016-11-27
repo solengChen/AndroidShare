@@ -5,7 +5,8 @@
         android:orderInCategory="100"
         android:showAsAction="never"
         android:icon="@drawable/ic_launcher"
-        android:title="@string/action_addfriend"/>
+        android:title="@string/action_addfriend"
+        />
     
     <item 
         android:id="@+id/action_iwould_share"

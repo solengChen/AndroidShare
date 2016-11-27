@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -38,6 +39,7 @@ public class SignUpActivity extends Activity implements ButtonFocusableListener 
 	private MyInputEditText passwordconf;
 
 	private Intent siIntent;
+	private ProgressDialog dialog;
 
 	private static final Map<String, Class<?>> BEANMAP = new HashMap<String, Class<?>>();
 
@@ -104,7 +106,8 @@ public class SignUpActivity extends Activity implements ButtonFocusableListener 
 							Toast.LENGTH_SHORT).show();
 				} else if (regexp(username, pwd)) {
 
-					final ProgressDialog dialog = ProgressDialog.show(
+					dialog.setCancelable(true);
+					dialog = ProgressDialog.show(
 							SignUpActivity.this, null, "ÕýÔÚ×¢²á");
 
 					MainActivity.threadPool.execute(new Runnable() {
@@ -149,6 +152,19 @@ public class SignUpActivity extends Activity implements ButtonFocusableListener 
 			return false;
 		}
 	};
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if(event.KEYCODE_BACK == keyCode) {
+			if(dialog.isShowing()) {
+				dialog.dismiss();
+			}
+		}
+		else {
+			finish();
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 
 	private void setEvent() {
 		confirm.setClickable(false);

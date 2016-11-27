@@ -1,27 +1,17 @@
 package com.scau.keshe.sharespace.firstpage.view;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,8 +49,8 @@ public class FirstPageFragment extends Fragment implements
 	private FPmodel mModel;
 
 	private boolean isAtBegin;
-	private ShareAdapter adapter;
 
+	private ShareAdapter shareAdapter;
 	private Handler UIhandler;
 
 	private static int start = 0;
@@ -98,6 +88,8 @@ public class FirstPageFragment extends Fragment implements
 		orderByComment = (TextView) view
 				.findViewById(R.id.fpage_popitem_comment);
 
+		shareAdapter = new ShareAdapter(context, MainActivity.bufShareData);
+
 		// **************************************************************
 		// 实例化presenter和model，后续业务操作都是通过桥梁presenter完成
 		// **************************************************************
@@ -119,27 +111,42 @@ public class FirstPageFragment extends Fragment implements
 		orderByWeek.setOnClickListener(this);
 		orderByMonth.setOnClickListener(this);
 
-		// initShareData();
-		adapter = new ShareAdapter(context, MainActivity.shareData);
-
-		listview.setAdapter(adapter);
-
+		initBufData();
+		listview.setListScrollStatusListener(shareAdapter);
+		listview.setAdapter(shareAdapter);
 		listview.setReflashListener(this);
 
 		UIhandler = new Handler() {
 			public void handleMessage(android.os.Message msg) {
 				switch (msg.what) {
 				case 0x111:
+					shareAdapter.notifyDataSetChanged();
 					listview.reflashComplete();
-					adapter.notifyDataSetChanged();
+					Log.i("消息0x111被接收？", "是的");
 					break;
 
 				case 0x110:
+					mPresenter.showFailMsg();
 					listview.reflashComplete();
+					Log.i("消息0x110被接收？？", "是的");
 					break;
 				}
 			};
 		};
+	}
+
+	/**
+	 * 初始化缓存数据，存入欢迎内容
+	 */
+	private void initBufData() {
+		// Log.i("shareData的长度为 = ", "" + MainActivity.bufShareData.size());
+		if (MainActivity.bufShareData.size() == 0) {
+			ShareListBean welcome = new ShareListBean();
+			welcome.setShare(new ShareBean(-1, "巨信", new Date().getTime(), -2,
+					-1, -1, null, "欢迎使用本应用！"));
+			MainActivity.bufShareData.add(welcome);
+
+		}
 	}
 
 	@Override
@@ -175,24 +182,21 @@ public class FirstPageFragment extends Fragment implements
 
 	@Override
 	public void showFailMsg(String error) {
-		mPresenter.showFailMsg();
-
+		if (error != null) {
+			Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	@Override
 	public boolean initFragmentListInfo(List<ShareListBean> data) {
 		if (data == null || data.size() == 0) {
 			UIhandler.sendEmptyMessage(0x110);
-			Log.i("FirstPageFragment iniFragmentListInfo--------->188",
-					"list<>data数据集为空");
 			return false;
 		} else {
-			Log.i("FirstPageFragment iniFragmentListInfo---------->192",
-					data.size() + "-> datasize " + MainActivity.shareData.size() + " ->shareData size");
-			if (MainActivity.shareData == null) {
-				MainActivity.shareData = data;
+			if (MainActivity.bufShareData == null) {
+				MainActivity.bufShareData = data;
 			} else {
-				MainActivity.shareData.addAll(data);
+				MainActivity.bufShareData.addAll(0, data);
 			}
 			start += data.size();
 			UIhandler.sendEmptyMessage(0x111);
@@ -236,12 +240,11 @@ public class FirstPageFragment extends Fragment implements
 				if (mPresenter == null || listview == null) {
 					Log.i("FirstPageFragment onReflash-----", "null");
 					return;
+				} else {
+					// userid = -1表示获取所有用户分享???????
+					mPresenter.sendRequest("", -1, -1, 0, 0, start,
+							(start + 20), false);
 				}
-
-				long time = new Date().getTime();
-				// userid = -1表示获取所有用户分享???????
-				mPresenter.sendRequest("", -1, -1, 0, 0, start, (start + 20),
-						false);
 			}
 		});
 

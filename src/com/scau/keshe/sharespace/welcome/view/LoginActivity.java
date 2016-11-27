@@ -15,9 +15,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -46,6 +48,9 @@ public class LoginActivity extends Activity implements LoginContract.View,
 	private ProgressDialog dialog;
 	private boolean ispsdShowable = false;
 
+	private Handler ToastHandler;
+	private final int PLEASE_LOGIN_FIRST = 0X001, ERROR_EMPTY = 0X002,
+			ERROR_CONNET = 0X003, ERROR_APP = 0x004;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +59,35 @@ public class LoginActivity extends Activity implements LoginContract.View,
 		this.setmActionBar();
 		this.initView();
 		this.setEvent();
-		Toast.makeText(LoginActivity.this, "您还未登录，请先登录！", Toast.LENGTH_LONG)
-				.show();
+
+		if (ToastHandler == null) {
+			ToastHandler = new Handler() {
+				public void handleMessage(android.os.Message msg) {
+					switch (msg.what) {
+					case PLEASE_LOGIN_FIRST:
+						Toast.makeText(LoginActivity.this, "您还未登录，请先登录！",
+								Toast.LENGTH_SHORT).show();
+						break;
+
+					case ERROR_EMPTY:
+						Toast.makeText(LoginActivity.this, "用户名或密码不能为空！",
+								Toast.LENGTH_SHORT).show();
+						break;
+
+					case ERROR_CONNET:
+						String error = msg.getData().getString("error");
+						Toast.makeText(LoginActivity.this, error,
+								Toast.LENGTH_SHORT).show();
+						break;
+					case ERROR_APP:
+						Toast.makeText(LoginActivity.this, "应用操作错误，错误编号0X004",
+								Toast.LENGTH_SHORT).show();
+						break;
+					}
+				};
+			};
+		}
+
 	}
 
 	private void setEvent() {
@@ -90,8 +122,7 @@ public class LoginActivity extends Activity implements LoginContract.View,
 					if (userName == null || mpassword == null
 							|| userName.length() == 0
 							|| mpassword.length() == 0) {
-						Toast.makeText(LoginActivity.this, "用户名或密码不能为空！",
-								Toast.LENGTH_SHORT).show();
+						ToastHandler.sendEmptyMessage(ERROR_EMPTY);
 					} else {
 						// 发送登录数据
 						dialog = ProgressDialog.show(LoginActivity.this, null,
@@ -200,14 +231,32 @@ public class LoginActivity extends Activity implements LoginContract.View,
 			finish();
 		}
 	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if(event.KEYCODE_BACK == keyCode) {
+			if(dialog.isShowing()) {
+				dialog.dismiss();
+			}
+		}
+		else {
+			finish();
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 
 	@Override
 	public void showFailMsg(String error) {
 		if (error != null) {
-			Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+			Message msg = Message.obtain();
+			Bundle errorData = new Bundle();
+			errorData.putString("error", error);
+			msg.setData(errorData);
+			msg.what = ERROR_CONNET;
+			ToastHandler.sendMessage(msg);
+
 		} else {
-			Log.i("loginActivity error-------------->232",
-					"登录失败信息空 error = null");
+			ToastHandler.sendEmptyMessage(ERROR_APP);
 		}
 
 	}
@@ -219,8 +268,8 @@ public class LoginActivity extends Activity implements LoginContract.View,
 	public boolean setIdAfterlogin(int userId) {
 		Log.i("loginActivity------->", "userid = " + userId);
 		if (userId == -1) {
-			mPresenter.showFailMsg();
 			dialog.dismiss();
+			mPresenter.showFailMsg();
 			return false;
 		}
 		// MainActivity.userId = userId;

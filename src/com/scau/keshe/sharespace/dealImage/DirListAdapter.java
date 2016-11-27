@@ -50,8 +50,8 @@ public class DirListAdapter extends ArrayAdapter<FolderBean> {
 		FolderBean bean = this.getItem(position);
 		if (vh != null) {
 			vh.img.setImageResource(R.drawable.picture_no);
-			ImageLoader.getInstance().loadImage(true,
-					bean.getFirstImgPath(), null, -1, vh.img);
+			ImageLoader.getInstance().loadImage(true, bean.getFirstImgPath(),null,
+					-1, vh.img);
 
 			vh.dirCount.setText(bean.getCount() + "");
 			vh.dirName.setText(bean.getName());

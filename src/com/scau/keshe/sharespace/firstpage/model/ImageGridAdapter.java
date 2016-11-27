@@ -13,11 +13,13 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 
 public class ImageGridAdapter extends BaseAdapter {
 
@@ -28,7 +30,6 @@ public class ImageGridAdapter extends BaseAdapter {
 
 	private int screenWidth; // 屏幕宽度
 	private int col = 2;
-
 	/**
 	 * 加载本地图片时调用该方法
 	 * 
@@ -74,12 +75,6 @@ public class ImageGridAdapter extends BaseAdapter {
 		this.datas = null;
 		this.dirPath = null;
 		this.netDatas = netDatas;
-
-		if (((this.netDatas.size() + 1) % 2) == 0) {
-			col = 2;
-		} else if ((this.netDatas.size() + 1) % 3 == 0) {
-			col = 3;
-		}
 	}
 
 	private void initAdapter(Context context) {
@@ -107,7 +102,7 @@ public class ImageGridAdapter extends BaseAdapter {
 	public Object getItem(int position) {
 		if (datas != null && dirPath != null && dirPath.length() != 0) {
 			return datas.get(position);
-		} else if (netDatas != null) {
+		} else if (netDatas != null && netDatas.size() > position) {
 			return netDatas.get(position);
 		}
 		return null;
@@ -121,59 +116,87 @@ public class ImageGridAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		if ((datas == null || datas.size() == 0 || dirPath == null)
-				&& (netDatas == null || netDatas.size() == 0
-						|| netDatas.get(position) == null
-						|| netDatas.get(position).getBytes() == null || netDatas
-						.get(position).getId() == -1)) {
-			ImageView img = new ImageView(context);
-			img.setImageResource(R.drawable.ic_launcher);
-			return img;
+				&& (netDatas == null || netDatas.size() == 0)) {
+			// ImageView img = new ImageView(context);
+			// img.setImageResource(R.drawable.ic_launcher);
+			return convertView;
 		}
 
-		final ViewHolder holder = new ViewHolder();
-		if (datas != null && dirPath != null && dirPath.length() != 0) {
-			holder.picPath = dirPath + "/" + datas.get(position);
-		} else  {
-			holder.imageData = netDatas.get(position).getBytes();
-			holder.imageId = netDatas.get(position).getId();
-		}
-		holder.imageView = new ImageView(context);
-		holder.imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+		final ViewHolder holder;
+		if (convertView == null) {
+			convertView = LayoutInflater.from(context).inflate(
+					R.layout.image_gird_view_pic_item, parent, false);
 
-		int width = (screenWidth * 3 / 4) / col;	//左侧头像占1/4 屏宽
-		int height = width; // 正方形显示方式,可能会有变形问题，保证宽度就行
-		holder.imageView.setLayoutParams(new AbsListView.LayoutParams(width,
-				height));
-
-		holder.imageView.setOnTouchListener(new View.OnTouchListener() {
-
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				switch (event.getAction()) {
-				case MotionEvent.ACTION_DOWN:
-					holder.imageView.setColorFilter(Color
-							.parseColor("#77000000"));
-					break;
-
-				case MotionEvent.ACTION_UP:
-					holder.imageView.setColorFilter(null);
-					break;
-				}
-
-				return false;
+			holder = new ViewHolder();
+			holder.imageView = (ImageView) convertView
+					.findViewById(R.id.image_grid_pictrue);
+			if (datas != null && dirPath != null && dirPath.length() != 0) {
+				holder.picPath = dirPath + "/" + datas.get(position);
+			} else if (netDatas.get(position) != null) {
+				holder.imageId = netDatas.get(position).getId();
 			}
-		});
+			convertView.setTag(holder);
+		} else {
+			holder = (ViewHolder) convertView.getTag();
+		}
+		
+		//重置图片
+		holder.imageId = -1;
+		holder.imageView.setImageResource(R.drawable.picture_no);
+		holder.picPath = null;
+		
+		// 加载本地图片数据
+		if (datas != null && datas.size() != 0) {
 
-		ImageLoader.getInstance().loadImage(true, holder.picPath,
-				holder.imageData, holder.imageId, holder.imageView);
+		}
 
-		return holder.imageView;
+		// 网络数据加载图片(包括缓存，因格式都是byte[]）
+		if (netDatas != null && netDatas.size() > 0) {
+			PictureBean data = netDatas.get(position);
+			
+			int picNum = this.netDatas.size();
+			if ((picNum % 2 == 0 || picNum == 1) && picNum != 6) { // 1、2、4则设为2列时图片宽度
+				col = 2;
+			} else if (picNum % 3 == 0 || picNum == 5) { // 3、5、6则设为3列时图片宽度
+				col = 3;
+			}
+			int vWidth = (screenWidth * 3 / 4 - 5 * (col + 1)) / col; // 左侧头像占1/4
+																		// 屏宽
+			int vHeight = vWidth;
+			holder.imageId = data.getId();
+			holder.imageView.setImageResource(R.drawable.picture_no);
+
+			// 不能直接new params！
+			convertView.setLayoutParams(new AbsListView.LayoutParams(vWidth,
+					vHeight));
+			holder.imageView.setMaxWidth(vWidth);
+			holder.imageView.setMaxHeight(vHeight);
+
+			ImageLoader.getInstance().loadImage(true, holder.picPath,
+					netDatas.get(position).getBytes(), holder.imageId,
+					holder.imageView);
+		}
+
+		return convertView;
 	}
 
 	private class ViewHolder {
 		String picPath;
-		byte[] imageData;
 		int imageId;
 		ImageView imageView;
+	}
+	
+	/**
+	 * 存分享id，复用时可用此来判断是否可用还是另外新建adapter
+	 * @param id
+	 */
+	private int flagShareId = -3;
+	
+	public void setShareId(int id) {
+		this.flagShareId = id;
+	}
+	
+	public int getShareId() {
+		return flagShareId;
 	}
 }

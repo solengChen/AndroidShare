@@ -89,8 +89,8 @@ public class IshareImageAdapter extends BaseAdapter {
 		 */
 		if (position < images.size() && images.get(position) != null
 				&& images.get(position).length() != 0) {
-			ImageLoader.getInstance().loadImage(true, images.get(position),
-					null, -1, holder.image);
+			ImageLoader.getInstance().loadImage(true, images.get(position), null, -1,
+					holder.image);
 		} else {
 			holder.image.setImageResource(R.drawable.before_pressdown);
 		}

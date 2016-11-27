@@ -20,6 +20,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -289,7 +290,6 @@ public class ImageShowActivity extends Activity {
 	 * ³õÊ¼»¯¿Ø¼þ
 	 */
 	private void initView() {
-
 		gridView = (GridView) findViewById(R.id.id_gridView);
 		bottomLy = (RelativeLayout) findViewById(R.id.id_button_ly);
 		dirName = (TextView) findViewById(R.id.id_dir_name);
@@ -297,6 +297,19 @@ public class ImageShowActivity extends Activity {
 
 		getActionBar().setBackgroundDrawable(
 				this.getResources().getDrawable(R.drawable.pressdown));
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if(event.KEYCODE_BACK == keyCode) {
+			if(progressDialog.isShowing()) {
+				progressDialog.dismiss();
+			}
+		}
+		else {
+			finish();
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 
 	/**
@@ -320,14 +333,12 @@ public class ImageShowActivity extends Activity {
 
 		case android.R.id.home:
 			imgAdapter.getSelectedImg().clear();
-			finish();
+			ImageShowActivity.this.finish();
 			return true;
 
 		case R.id.action_upload:
-			Log.i("ImageShowActivity onOptionItemSelected----------->325",
-					"pictures are uploading");
 			setResult(IwouldShareActivity.UPLAODCALL, getIntent());
-			finish();
+			ImageShowActivity.this.finish();
 			return true;
 		}
 

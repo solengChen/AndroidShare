@@ -24,7 +24,7 @@ import com.scau.keshe.sharespace.bean.ShareBean;
 import com.scau.keshe.sharespace.bean.ShareListBean;
 import com.scau.keshe.sharespace.bean.SortType;
 import com.scau.keshe.sharespace.bean.UserBean;
-import com.scau.keshe.sharespace.util.ClientStartException;
+import com.scau.keshe.sharespace.util.ClientOOCException;
 
 /**
  * 用户的各种访问服务器操作 包括登录、注册、注销、获取信息 更新用户数据
@@ -58,7 +58,7 @@ public class ClientBehavior {
 		return behavior;
 	}
 
-	public void startClient() throws ClientStartException {
+	public void startClient() throws ClientOOCException {
 		try {
 			if (client != null) {
 				client.start();
@@ -67,7 +67,19 @@ public class ClientBehavior {
 			}
 		} catch (LifeCycleException e) {
 			Log.e("ClientBehavior start Exception--------->", e.getMessage());
-			throw new ClientStartException(e);
+			throw new ClientOOCException(e);
+		}
+	}
+	
+	public void closeClient() throws ClientOOCException{
+		if(client != null) {
+			try {
+				client.destroy();
+			} catch (LifeCycleException e) {
+				// TODO Auto-generated catch block
+				Log.e("ClientBehavior start Exception--------->", e.getMessage());
+				throw new ClientOOCException(e);
+			}
 		}
 	}
 
@@ -120,13 +132,13 @@ public class ClientBehavior {
 			String json = client.login(clientName, password);
 			Log.i("json login-------------->", json);
 			JSONObject jobject = JSONObject.parseObject(json);
-			userId = jobject.getJSONObject("result").getInteger("userId");
 
 			int status = jobject.getInteger("status");
 			if (status != 0) {
 				errorCode = jobject.getInteger("errcode");
 				return -1;
 			}
+			userId = jobject.getJSONObject("result").getInteger("userId");
 		} catch (ClientException e) {
 			e.printStackTrace();
 		}
@@ -267,7 +279,11 @@ public class ClientBehavior {
 		try {
 			String json = client.getShares(keyword, userId, datetime,
 					orderColumn, order, start, limit, deleted);
-			Log.i("ClientBehavior getShares-------------->266", json);
+			if(json.length() > 60)
+				Log.i("ClientBehavior getShares-------------->266", json.substring(0, 60));
+			else 
+				Log.i("ClientBehavior getShares-------------->266", json);
+			
 			JSONObject jobject = JSONObject.parseObject(json);
 			int status = jobject.getInteger("status");
 
@@ -534,13 +550,19 @@ public class ClientBehavior {
 	 * @param pictureIds
 	 * @return
 	 */
+	
 	public List<PictureBean> getPictures(boolean ignoreIfNotExist,
 			int[] pictureIds) {
 		List<PictureBean> pictures = null;
 		try {
 			String json = client.getPictures(ignoreIfNotExist, pictureIds);
 			JSONObject jobject = JSONObject.parseObject(json);
-			Log.i("ClientBehavior getPictures json---------->540", json);
+			
+			if(json.length() > 60)
+				Log.i("ClientBehavior getPictures json---------->540", json.substring(0, 60));
+			else
+				Log.i("ClientBehavior getPictures json---------->540", json);
+			
 			int status = jobject.getInteger("status");
 			if (status != 0) {
 				errorCode = jobject.getInteger("errcode");
@@ -557,6 +579,53 @@ public class ClientBehavior {
 		}
 
 		return pictures;
+	}
+	
+	public String getPictruesJSON(boolean ignoreIfNotExist,
+			int[] pictureIds){
+		String picArrayJSON = null;
+		try {
+			Log.i("位置ClientBehavior getPictruesJSON --------->588", "获取图片：id = " + pictureIds);
+			String json = client.getPictures(ignoreIfNotExist, pictureIds);
+//			JSONObject jobject = JSONObject.parseObject(json);
+//			if(json.length() > 60)
+//				Log.i("ClientBehavior getPictures json---------->568", json.substring(0, 60));
+//			else 
+//				Log.i("ClientBehavior getPictures json---------->568", json);
+//			
+//			int status = jobject.getInteger("status");
+//			if (status != 0) {
+//				errorCode = jobject.getInteger("errcode");
+//				return null;
+//			}
+//
+//			JSONObject result = jobject.getJSONObject("result");
+//			JSONArray shares = result.getJSONArray("pictures");
+//			picArrayJSON = result.getJSONArray("pictures").toJSONString();
+			picArrayJSON = json;
+
+		} catch (ClientException e) {
+			e.printStackTrace();
+		}
+		return picArrayJSON;
+	}
+	
+	/**
+	 * 获取单张图片
+	 * @param ignoreIfNotExist
+	 * @param pictureIds
+	 * @return
+	 */
+	public PictureBean getOnePicture(boolean ignoreIfNotExist,int
+			pictureId) {
+		PictureBean onePicture = null;
+		
+		List<PictureBean> pictures = getPictures(ignoreIfNotExist, new int[] {pictureId}); 
+		if(pictures != null && pictures.size() != 0) {
+			onePicture = pictures.get(0);
+		}
+		
+		return onePicture;
 	}
 
 	/**

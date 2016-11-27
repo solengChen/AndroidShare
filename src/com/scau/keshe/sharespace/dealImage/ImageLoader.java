@@ -1,5 +1,9 @@
 package com.scau.keshe.sharespace.dealImage;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.ref.SoftReference;
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
@@ -17,6 +21,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.v4.util.LruCache;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 
@@ -148,24 +153,23 @@ public class ImageLoader {
 			imageView.setTag(path);
 			isInternet = false;
 		} else {
-			imageView.setTag(data);
+			imageView.setTag("._NET" + imageId);
 			isInternet = true;
 		}
-		if (UIHandler == null) {
+//		if (UIHandler == null) {
 			UIHandler = new Handler() {
 				public void handleMessage(Message msg) {
 					ImgBeanHolder holder = (ImgBeanHolder) msg.obj;
-					if (msg.what == 0) {
+					if (msg.what == 0x000) {
 						ImageView imageView = holder.imageView;
 						imageView.setImageResource(R.drawable.ic_launcher);
 						return;
-					} else if (msg.what == 1) {
+					} else if (msg.what == 0x001) {
 						// 获取得到的图片并设置
-
+						
 						Bitmap bm = holder.bitmap;
 						ImageView imageView = holder.imageView;
 						String path = holder.path;
-						byte[] data = holder.imageByte;
 						int _id = holder.imageId;
 
 						if (!isInternet
@@ -173,14 +177,14 @@ public class ImageLoader {
 							imageView.setImageBitmap(bm);
 						} else if (isInternet
 								&& imageView.getTag().toString()
-										.equals("_NET" + _id)) {
+										.equals("._NET" + _id)) {
 							imageView.setImageBitmap(bm);
 						}
 					}
 
 				};
 			};
-		}
+//		}
 
 		if ((path == null || path.length() == 0)
 				&& (data == null || data.length == 0 || imageId == -1)) {
@@ -188,8 +192,8 @@ public class ImageLoader {
 			ImgBeanHolder holder = new ImgBeanHolder();
 			holder.imageView = imageView;
 			msg.obj = holder;
-			msg.what = 0;
-
+			msg.what = 0x000;
+			UIHandler.sendMessage(msg);
 			return;
 		}
 
@@ -197,7 +201,7 @@ public class ImageLoader {
 		if (!isInternet) {
 			bm = this.getBitmapFromLruCache(path);
 		} else {
-			bm = this.getBitmapFromLruCache("_NET" + imageId);
+			bm = this.getBitmapFromLruCache("._NET" + imageId);
 		}
 
 		if (bm != null) {
@@ -216,7 +220,6 @@ public class ImageLoader {
 							imageSize.width, imageSize.height, path, data);
 					// 3、把图片加入到缓存
 					addBitmapToLruCache(path, imageId, bm);
-
 					reFrashBitmap(path, data, imageId, imageView, bm);
 
 					// semaphoreThreadPool.release();
@@ -244,7 +247,7 @@ public class ImageLoader {
 		holder.imageView = imageView;
 
 		message.obj = holder;
-		message.what = 1;
+		message.what = 0x001;
 		UIHandler.sendMessage(message);
 
 	}
@@ -311,6 +314,25 @@ public class ImageLoader {
 			return BitmapFactory.decodeFile(path, options);
 		} else {
 			return BitmapFactory.decodeByteArray(data, 0, data.length, options);
+
+			// 软引用
+			/*InputStream input = new ByteArrayInputStream(data);
+			SoftReference softRef = new SoftReference(
+					BitmapFactory
+							.decodeByteArray(data, 0, data.length, options));
+
+			try {
+				if (data != null) {
+					data = null;
+				}
+				if (input != null) {
+					input.close();
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return (Bitmap) softRef.get();*/
 		}
 	}
 
@@ -444,7 +466,35 @@ public class ImageLoader {
 	private Bitmap getBitmapFromLruCache(String key) {
 		return lruCache.get(key);
 	}
-
+	
+	/**
+	 * 移除缓存
+	 * @param key
+	 */
+	public synchronized void removeImageCache(String key){
+		if(key != null) {
+			if(lruCache != null) {
+				Bitmap bm = lruCache.remove(key);
+				if(bm != null) {
+					bm.recycle();
+				}
+			}
+		}
+	}
+	
+	/**
+	 * 清理缓存
+	 * @author ShouLun
+	 *
+	 */
+	public void clearCache() {
+		if(lruCache != null) {
+			if(lruCache.size() > 0) {
+				lruCache.evictAll();
+			}
+		}
+		lruCache = null;
+	}
 	private class ImageSize {
 		int width;
 		int height;

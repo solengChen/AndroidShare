@@ -3,6 +3,8 @@ package com.scau.keshe.sharespace.welcome;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -10,17 +12,19 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import com.scau.keshe.sharespace.R;
+import com.scau.keshe.sharespace.bean.PictureBean;
 import com.scau.keshe.sharespace.bean.ShareListBean;
 import com.scau.keshe.sharespace.bean.UserBean;
 import com.scau.keshe.sharespace.connector.view.ContactsFragment;
 import com.scau.keshe.sharespace.dealImage.ImageShowActivity;
+import com.scau.keshe.sharespace.firstpage.model.ShareAdapter;
 import com.scau.keshe.sharespace.firstpage.view.FirstPageFragment;
 import com.scau.keshe.sharespace.fragment.ChangeFragment;
 import com.scau.keshe.sharespace.fragment.FragmentAdapter;
 import com.scau.keshe.sharespace.myself.IwouldShareActivity;
 import com.scau.keshe.sharespace.myself.MyselfFragment;
 import com.scau.keshe.sharespace.requestnet.ClientBehavior;
-import com.scau.keshe.sharespace.util.ClientStartException;
+import com.scau.keshe.sharespace.util.ClientOOCException;
 import com.scau.keshe.sharespace.welcome.contract.LoginContract;
 import com.scau.keshe.sharespace.welcome.model.LoadUserBeanModelImpl;
 import com.scau.keshe.sharespace.welcome.presenter.LoadUserBeanPresenterImpl;
@@ -80,20 +84,27 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 	public static Intent mainIntent = new Intent();
 
-	public static List<ShareListBean> shareData = new ArrayList<ShareListBean>();
+	/**
+	 * 数据缓存
+	 */
+	public static List<ShareListBean> bufShareData = new ArrayList<ShareListBean>();
+	public static HashMap<String, List<PictureBean>> bufPictures = new HashMap<String, List<PictureBean>>();
+	public static HashMap<String, UserBean> bufUsers = new HashMap<String, UserBean>();
+	public static LinkedList<Runnable> bufTask = new LinkedList<Runnable>();
+	// public static ShareAdapter shareAdapter;
 	/**
 	 * MVP
 	 */
 	private LoginContract.LoadUserPresenter loadPresent;
 	private LoginContract.LoadModel loadModel;
 	public static int userId = -1;
-	private UserBean mUser;
+	public static UserBean mUser;
 
 	public static String USERIDSTRING = "UserId";
 	/**
 	 * 线程池，只有一个
 	 */
-	public static ExecutorService threadPool = new ThreadPoolExecutor(2, 5, 30,
+	public static ExecutorService threadPool = new ThreadPoolExecutor(3, 6, 30,
 			TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 	/**
 	 * 加载对话框
@@ -116,7 +127,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	public static final int JUMP_FROM_IWOULD_SHARE = 0x001,
 			JUMP_FROM_MYSELF_PART = 0x002, JUMP_FROM_ADDFRIEND = 0x003;
 
-	public static final int SIGNUP_FAIL = 0X205, SIGNUP_SUCCESS = 0X206, SIGNUP_CLOSEALL = 0x210;
+	public static final int SIGNUP_FAIL = 0X205, SIGNUP_SUCCESS = 0X206,
+			SIGNUP_CLOSEALL = 0x210;
 	public static final int LOGIN_SUCCESS = 0x202, LOGIN_FAIL = 0X203;
 	/**
 	 * 发布分享结果码
@@ -201,7 +213,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		mClientBehavior = ClientBehavior.getInstance();
 		try {
 			mClientBehavior.startClient();
-		} catch (ClientStartException e) {
+		} catch (ClientOOCException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -266,7 +278,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		return true;
 	}
 
-	
 	/**
 	 * 设置点击actionBar触发器
 	 */
@@ -275,15 +286,19 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 		switch (item.getItemId()) {
 		case R.id.action_iwould_share:
-			if (userId == -1) {
-				mainIntent.setClass(MainActivity.this, LoginActivity.class);
-				mainIntent.putExtra("jump-from", MainActivity.JUMP_FROM_IWOULD_SHARE);
-				startActivityForResult(mainIntent, LOGIN);
-			} else {
-				mainIntent.setClass(MainActivity.this, IwouldShareActivity.class);
-				startActivityForResult(mainIntent, IWOULDSHARE);
-			}
+			 if (userId == -1) {
+			 mainIntent.setClass(MainActivity.this, LoginActivity.class);
+			 mainIntent.putExtra("jump-from",
+			 MainActivity.JUMP_FROM_IWOULD_SHARE);
+			 startActivityForResult(mainIntent, LOGIN);
+			 } else {
+			 mainIntent.setClass(MainActivity.this,
+			 IwouldShareActivity.class);
+			 startActivityForResult(mainIntent, IWOULDSHARE);
+			 }
 
+//			mainIntent.setClass(MainActivity.this, ImageShowActivity.class);
+//			startActivityForResult(mainIntent, IWOULDSHARE);
 			return true;
 
 		}
@@ -307,18 +322,18 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		if (requestCode == LOGIN && resultCode == LOGIN_SUCCESS) {
 			userId = Integer.parseInt(intent.getStringExtra("L-userId"));
 			int jumpOrder = intent.getIntExtra("jump-from", -1);
-			if(jumpOrder == JUMP_FROM_IWOULD_SHARE) {
+			if (jumpOrder == JUMP_FROM_IWOULD_SHARE) {
 				intent.removeExtra("jump-from");
 				intent.setClass(MainActivity.this, IwouldShareActivity.class);
 				startActivityForResult(intent, IWOULDSHARE);
-			}
-			else {
+			} else {
 				intent.removeExtra("jump-from");
-				
+
 			}
-			//TODO other jump
+			// TODO other jump
 		}
-		Log.i("MainActivity onActivityResult----------->320", LOGIN + " " + LOGIN_SUCCESS + " ? " + requestCode + " " + resultCode);
+		Log.i("MainActivity onActivityResult----------->320", LOGIN + " "
+				+ LOGIN_SUCCESS + " ? " + requestCode + " " + resultCode);
 		super.onActivityResult(requestCode, resultCode, intent);
 	}
 
@@ -403,7 +418,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	@Override
 	protected void onResume() {
 		Log.i("mainActivity onresume-------------", "");
-//		UIhandler.sendEmptyMessage(FLASH_FIRSTPAGE);
+		// UIhandler.sendEmptyMessage(FLASH_FIRSTPAGE);
 		if (userId != -1 && mUser != null) {
 			MainActivity.threadPool.execute(new Runnable() {
 
@@ -428,14 +443,30 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (dialog != null) {
+		if (dialog != null && dialog.isShowing()) {
 			dialog.dismiss();
 		} else if (keyCode == event.KEYCODE_BACK) {
-			threadPool.shutdown();
-			userId = -1;
+			MainActivity.threadPool.shutdown();
+			try {
+				if (!MainActivity.threadPool.awaitTermination(1000,
+						TimeUnit.MILLISECONDS)) {
+					MainActivity.threadPool.shutdownNow();
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				Log.i("任务超时，强制关闭!", "内容：" + e);
+				MainActivity.threadPool.shutdownNow();
+			}
+
 			finish();
 		}
 		return super.onKeyDown(keyCode, event);
+	}
+
+	public static void ExcuteTask() {
+		if (bufTask.size() > 0) {
+			threadPool.execute(bufTask.removeLast());
+		}
 	}
 
 	/**
@@ -454,8 +485,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	void setFirstpageListener(FragmentListener listener) {
 		this.firstpageListener = listener;
 	}
-	
-	
 
 	public void setContractsListener(FragmentListener contractsListener) {
 		this.contractsListener = contractsListener;
@@ -465,13 +494,11 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		this.myselfListener = myselfListener;
 	}
 
-
-
 	public interface FragmentListener {
 		void mainRequestReflash();
 	}
-	
-	//===========================5毛钱特效=======================
+
+	// ===========================5毛钱特效=======================
 	/**
 	 * 实现点击切换fragment的效果
 	 */

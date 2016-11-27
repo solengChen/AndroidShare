@@ -38,6 +38,7 @@
                 android:id="@+id/first_page_sharelist_image_gridview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:stretchMode="columnWidth"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp"
                 android:verticalSpacing="5dp"

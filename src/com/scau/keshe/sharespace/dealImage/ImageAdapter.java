@@ -7,6 +7,10 @@ import java.util.Set;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +38,8 @@ public class ImageAdapter extends BaseAdapter {
 
 	private Context context;
 
+	private Handler UIhandler;
+
 	// 图片名与文件夹路径分开存，可减少存储空间的消耗
 	public ImageAdapter(Context context, List<String> datas, String dirPath) {
 		// this.context = context;
@@ -48,6 +54,21 @@ public class ImageAdapter extends BaseAdapter {
 		DisplayMetrics dm = new DisplayMetrics();
 		wm.getDefaultDisplay().getMetrics(dm);
 		screenWidth = dm.widthPixels;
+
+		UIhandler = new Handler() {
+			public void handleMessage(android.os.Message msg) {
+				if (msg.what == 0x007) {
+					Bundle data = msg.getData();
+					if (data != null) {
+						String imgPath = data.getString("imgPath");
+						ViewHolder holder = (ViewHolder) msg.obj;
+						ImageLoader.getInstance().loadImage(true, imgPath, null,-1,
+								holder.vhImage);
+					}
+				}
+			};
+		};
+
 	}
 
 	@Override
@@ -100,8 +121,15 @@ public class ImageAdapter extends BaseAdapter {
 
 		final String imgPath = dirPath + "/" + datas.get(position);
 
-		ImageLoader.getInstance().loadImage(true, imgPath, null, -1,
-				viewHolder.vhImage);
+		Message msg = Message.obtain();
+		Bundle data = new Bundle();
+		data.putString("imgPath", imgPath);
+		msg.obj = viewHolder;
+		msg.setData(data);
+		msg.what = 0x007;
+		UIhandler.sendMessage(msg);
+		// ImageLoader.getInstance().loadImage(true, imgPath, null, -1,
+		// viewHolder.vhImage);
 
 		viewHolder.vhImage.setOnClickListener(new View.OnClickListener() {
 
@@ -119,8 +147,7 @@ public class ImageAdapter extends BaseAdapter {
 					if (selectedImg.size() >= 6) {
 						Toast.makeText(context, "最多只能分享六张图片!",
 								Toast.LENGTH_SHORT).show();
-					}
-					else {
+					} else {
 						selectedImg.add(imgPath);
 						viewHolder.vhImage.setColorFilter(Color
 								.parseColor("#77000000"));
@@ -140,20 +167,19 @@ public class ImageAdapter extends BaseAdapter {
 
 		return convertView;
 	}
-	
 
 	/**
 	 * 获取标记的图片的绝对路径
+	 * 
 	 * @return
 	 */
 	public static List<String> getSelectedImg() {
 		return selectedImg;
 	}
-	
 
 	private class ViewHolder {
 		ImageView vhImage;
 		ImageButton vhButton;
 	}
-	
+
 }
